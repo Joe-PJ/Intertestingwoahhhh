@@ -27,8 +27,8 @@ npm run preview    # serve the built app
 
 ## Automatic checks
 
-`.github/workflows/ci.yml` runs on GitHub's servers for every push to `main`,
-every pull request, and on demand from the **Actions** tab. It installs
+`.github/workflows/ci.yml` runs on GitHub's servers for every push to any
+branch, every pull request, and on demand from the **Actions** tab. It installs
 dependencies with `npm ci`, then runs `npm run typecheck`, `npm run lint`,
 `npm test` and `npm run build` — the same commands listed above. If any step
 fails, the commit or pull request is marked as failed. The workflow only checks

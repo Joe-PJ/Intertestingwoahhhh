@@ -1,10 +1,9 @@
 name: Check
 
-# Every push to main and every pull request runs typecheck, lint, tests and
-# build. This workflow only checks the code; it publishes nothing.
+# Every push (to any branch) and every pull request runs typecheck, lint,
+# tests and build. This workflow only checks the code; it publishes nothing.
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -13,9 +12,10 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # A newer push to a pull request cancels its older run; pushes to main never
-  # cancel each other, so every main commit keeps its own check result.
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # A newer push to a branch or pull request cancels that ref's older run;
+  # pushes to main never cancel each other, so every main commit keeps its own
+  # check result.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   check:
