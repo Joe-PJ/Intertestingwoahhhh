@@ -25,6 +25,19 @@ describe('buildOverpassQuery', () => {
     );
   });
 
+  it.each([
+    ['NaN latitude', { lat: NaN, lon: 1 }, 5000],
+    ['infinite longitude', { lat: 1, lon: Infinity }, 5000],
+    ['out-of-range latitude', { lat: 91, lon: 0 }, 5000],
+    ['out-of-range longitude', { lat: 0, lon: -181 }, 5000],
+    ['infinite radius', CENTER, Infinity],
+    ['NaN radius', CENTER, NaN],
+    ['zero radius', CENTER, 0],
+    ['negative radius', CENTER, -10],
+  ])('rejects a %s with a RangeError', (_label, center, radius) => {
+    expect(() => buildOverpassQuery(center, radius)).toThrow(RangeError);
+  });
+
   it('rounds the radius to whole metres', () => {
     expect(buildOverpassQuery(CENTER, 1234.6)).toContain('(around:1235,');
   });
@@ -76,6 +89,14 @@ describe('fetchBars', () => {
     expect(byId['node/1004']).not.toHaveProperty('openingHoursRaw');
   });
 
+  it('rejects a non-finite centre or radius before sending anything', async () => {
+    const fetchMock = respondWith(fixture);
+    await expect(fetchBars({ lat: NaN, lon: 1 }, 5000, { fetch: fetchMock })).rejects.toBeInstanceOf(RangeError);
+    await expect(fetchBars(CENTER, Infinity, { fetch: fetchMock })).rejects.toBeInstanceOf(RangeError);
+    await expect(fetchBars(CENTER, -1, { fetch: fetchMock })).rejects.toBeInstanceOf(RangeError);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('maps HTTP 429 to rateLimited and other failures to network', async () => {
     await expect(
       fetchBars(CENTER, 5000, { fetch: respondWith('slow down', { status: 429, raw: true }) }),
@@ -122,6 +143,54 @@ describe('parseOverpassResponse', () => {
       CENTER,
     );
     expect(bars).toEqual([]);
+  });
+
+  it('drops elements whose coordinates are non-finite, out of range or not numbers', () => {
+    const bars = parseOverpassResponse(
+      {
+        elements: [
+          { type: 'node', id: 1, lat: Infinity, lon: 0 },
+          { type: 'node', id: 2, lat: NaN, lon: 0 },
+          { type: 'node', id: 3, lat: '40.7', lon: '-73.9' },
+          { type: 'node', id: 4, lat: 95, lon: 0 },
+          { type: 'way', id: 5, center: { lat: 40.7, lon: -Infinity } },
+          { type: 'relation', id: 6, center: null },
+          { type: 'node', id: 7, lat: 40.73, lon: -73.98, tags: { name: 'Kept' } },
+        ],
+      },
+      CENTER,
+    );
+    expect(bars.map((bar) => bar.id)).toEqual(['node/7']);
+    expect(Number.isFinite(bars[0]!.distanceMeters)).toBe(true);
+  });
+
+  it('ignores tag values that are not strings', () => {
+    const [bar] = parseOverpassResponse(
+      {
+        elements: [
+          {
+            type: 'node',
+            id: 8,
+            lat: 40.73,
+            lon: -73.98,
+            tags: { name: 42, opening_hours: { evil: true }, 'addr:street': ['x'], 'addr:housenumber': 7 },
+          },
+        ],
+      },
+      CENTER,
+    );
+    expect(bar).toMatchObject({ id: 'node/8', name: UNNAMED_BAR });
+    expect(bar).not.toHaveProperty('openingHoursRaw');
+    expect(bar).not.toHaveProperty('address');
+  });
+
+  it('skips non-object elements and ignores non-object tags', () => {
+    const bars = parseOverpassResponse(
+      { elements: [null, 'x', 3, { type: 'node', id: 9, lat: 1, lon: 1, tags: 'nope' }] },
+      CENTER,
+    );
+    expect(bars.map((bar) => bar.id)).toEqual(['node/9']);
+    expect(bars[0]!.name).toBe(UNNAMED_BAR);
   });
 });
 

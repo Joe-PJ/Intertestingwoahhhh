@@ -1,3 +1,4 @@
+import { isLatitude, isLongitude } from './geo';
 import { requestJson } from './request';
 import { DataError, type Coords, type RequestOptions } from './types';
 
@@ -32,7 +33,7 @@ export async function geocode(query: string, options: RequestOptions = {}): Prom
   const record = (first ?? {}) as Record<string, unknown>;
   const lat = coordinate(record.lat);
   const lon = coordinate(record.lon);
-  if (lat === null || lon === null) {
+  if (!isLatitude(lat) || !isLongitude(lon)) {
     throw new DataError('badResponse', 'Nominatim result had invalid coordinates');
   }
   const displayName = typeof record.display_name === 'string' ? record.display_name : trimmed;

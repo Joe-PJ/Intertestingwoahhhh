@@ -72,6 +72,25 @@ describe('geocode', () => {
     });
   });
 
+  it.each([
+    ['non-numeric', { lat: 'abc', lon: '1' }],
+    ['Infinity', { lat: 'Infinity', lon: '1' }],
+    ['NaN', { lat: '1', lon: 'NaN' }],
+    ['missing', { lat: '1' }],
+    ['object', { lat: {}, lon: '1' }],
+    ['out-of-range', { lat: '120', lon: '1' }],
+  ])('maps a result with a %s coordinate to badResponse', async (_label, record) => {
+    await expect(geocode('Austin', { fetch: respondWith([record]) })).rejects.toMatchObject({
+      kind: 'badResponse',
+    });
+  });
+
+  it('maps a null first result to badResponse', async () => {
+    await expect(geocode('Austin', { fetch: respondWith([null]) })).rejects.toMatchObject({
+      kind: 'badResponse',
+    });
+  });
+
   it('times out after 25 seconds', async () => {
     vi.useFakeTimers();
     const pending = geocode('Austin', { fetch: hangingFetch() });
