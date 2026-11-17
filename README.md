@@ -24,6 +24,16 @@ npm run build      # type-check and build to dist/
 npm run preview    # serve the built app
 ```
 
+## Checks and publishing
+
+`.github/workflows/ci-pages.yml` runs typecheck, lint, tests and build on every
+push and pull request. A push to `main` that passes is published to GitHub
+Pages at `https://joe-pj.github.io/Intertestingwoahhhh/`. Pages must be turned
+on once in the repository's **Settings → Pages** with **Source: GitHub
+Actions**. Until then, the publish job fails and the checks still run. The build
+uses relative asset paths (`base: './'` in `vite.config.ts`), so the same
+`dist/` works at that sub-path or at a site root.
+
 ## How it works
 
 - `src/data/geocode.ts` — turns a typed place into coordinates via
