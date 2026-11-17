@@ -171,8 +171,9 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Search within 10 km' }));
 
     await screen.findByRole('heading', { level: 2, name: /Day Walkers/ });
-    expect(fetchBarsMock).toHaveBeenLastCalledWith(expect.anything(), 10_000, expect.anything());
-    expect(geocodeMock).toHaveBeenLastCalledWith('Austin', expect.anything());
+    expect(fetchBarsMock).toHaveBeenLastCalledWith({ lat: AUSTIN.lat, lon: AUSTIN.lon }, 10_000, expect.anything());
+    // The wider search reuses the place already found instead of looking it up again.
+    expect(geocodeMock).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText('Search within')).toHaveValue('10');
   });
 

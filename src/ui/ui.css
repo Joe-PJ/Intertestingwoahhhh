@@ -27,8 +27,8 @@
   line-height: var(--leading-snug);
   cursor: pointer;
   transition:
-    background-color var(--duration-fast) ease,
-    border-color var(--duration-fast) ease;
+    background-color var(--duration-fast) var(--ease-out-expo),
+    border-color var(--duration-fast) var(--ease-out-expo);
 }
 
 .button:disabled {
@@ -66,7 +66,10 @@
 /* Press feedback is a small physical cue; it is skipped entirely for reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
   .button {
-    transition-property: background-color, border-color, transform;
+    transition:
+      background-color var(--duration-fast) var(--ease-out-expo),
+      border-color var(--duration-fast) var(--ease-out-expo),
+      transform var(--duration-fast) var(--ease-out-expo);
   }
 
   .button:active:not(:disabled) {

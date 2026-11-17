@@ -31,8 +31,8 @@ describe('useBarSearch', () => {
       });
 
     const { result } = renderHook(() => useBarSearch({ now: NOW }));
-    act(() => void result.current.search({ kind: 'here', coords: { lat: 1, lon: 1 }, radiusKm: 5 }));
-    act(() => void result.current.search({ kind: 'here', coords: { lat: 2, lon: 2 }, radiusKm: 2 }));
+    act(() => void result.current.search({ kind: 'coords', coords: { lat: 1, lon: 1 }, label: 'your location', radiusKm: 5 }));
+    act(() => void result.current.search({ kind: 'coords', coords: { lat: 2, lon: 2 }, label: 'your location', radiusKm: 2 }));
 
     await waitFor(() => expect(result.current.state.status).toBe('success'));
     expect(signals[0]!.aborted).toBe(true);

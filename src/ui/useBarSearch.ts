@@ -6,13 +6,22 @@ import { groupAndSort, type ClosingGroup } from '../domain/closing';
 import type { SearchErrorKind } from './messages';
 
 export type SearchRequest =
-  | { kind: 'here'; coords: Coords; radiusKm: RadiusKm }
+  /** A known centre: the device location, or a place already looked up (so widening never re-geocodes). */
+  | { kind: 'coords'; coords: Coords; label: string; radiusKm: RadiusKm }
   | { kind: 'place'; query: string; radiusKm: RadiusKm };
 
 export type SearchState =
   | { status: 'idle' }
   | { status: 'loading'; request: SearchRequest }
-  | { status: 'success'; request: SearchRequest; placeLabel: string; total: number; groups: ClosingGroup[] }
+  | {
+      status: 'success';
+      request: SearchRequest;
+      /** Where the search was centred, kept so a wider search can reuse it without another place lookup. */
+      centre: Coords;
+      placeLabel: string;
+      total: number;
+      groups: ClosingGroup[];
+    }
   | { status: 'error'; request: SearchRequest; errorKind: SearchErrorKind };
 
 interface Options {
@@ -52,11 +61,11 @@ export function useBarSearch({ now = systemNow }: Options = {}) {
           placeLabel = place.displayName;
         } else {
           centre = request.coords;
-          placeLabel = 'your location';
+          placeLabel = request.label;
         }
         const bars = await fetchBars(centre, request.radiusKm * 1000, { signal });
         if (signal.aborted) return;
-        setState({ status: 'success', request, placeLabel, total: bars.length, groups: groupAndSort(bars, now()) });
+        setState({ status: 'success', request, centre, placeLabel, total: bars.length, groups: groupAndSort(bars, now()) });
       } catch (error) {
         // A superseded search is not a failure: the newer one owns the screen.
         if (signal.aborted) return;

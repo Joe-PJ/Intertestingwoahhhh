@@ -22,7 +22,8 @@ export function App() {
   const widenTo = (km: RadiusKm) => {
     if (state.status !== 'success') return;
     setRadiusKm(km);
-    runSearch({ ...state.request, radiusKm: km });
+    // Reuse the centre already found: widening must not look the place up again.
+    runSearch({ kind: 'coords', coords: state.centre, label: state.placeLabel, radiusKm: km });
   };
 
   return (

@@ -39,7 +39,12 @@ export function SearchPanel({ radiusKm, onRadiusChange, onSearch, busy, placeInp
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setLocating(false);
-        onSearch({ kind: 'here', coords: { lat: coords.latitude, lon: coords.longitude }, radiusKm });
+        onSearch({
+          kind: 'coords',
+          coords: { lat: coords.latitude, lon: coords.longitude },
+          label: 'your location',
+          radiusKm,
+        });
       },
       (error) => {
         setLocating(false);

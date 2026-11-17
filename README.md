@@ -7,8 +7,8 @@ location or a typed place, within 1–25 km) using free OpenStreetMap data, and
 organises them by closing time — so you can tell at a glance which places shut
 at a normal hour and which ones keep going deep into the night.
 
-> Status: early scaffold. The data layer (place lookup + bar search) is in
-> place; the search screen and closing-time grouping are next.
+> Status: working app. Search by location or typed place, and see tonight's bars
+> split into Day Walkers and Night Crawlers by closing time.
 
 ## Run it
 
@@ -34,6 +34,32 @@ npm run preview    # serve the built app
 - Both calls give up after 25 seconds and fail with a typed `DataError`
   (`network`, `timeout`, `rateLimited`, `notFound`, `badResponse`) that the UI
   turns into a plain-language message.
+- `src/domain/closing.ts` — reads each bar's `opening_hours` and works out when
+  it closes tonight, then sorts bars into four groups, shown in this order:
+  - **Day Walkers** — close before midnight (sun icon).
+  - **Night Crawlers** — close between midnight and 06:00, or stay open all
+    night (moon icon). The midnight split lives in one constant,
+    `NIGHT_SPLIT_HOUR`.
+  - **Closed tonight** — listed hours, but not open tonight.
+  - **Hours unknown** — no hours on the map, or hours we can't read.
+
+## The screen
+
+- `src/ui/SearchPanel.tsx` — "Use my location" button, a typed-place field and
+  a radius choice (1, 2, 5, 10 or 25 km; 5 km to start). If location is off,
+  it says so and moves you to the typed-place field.
+- `src/ui/useBarSearch.ts` — runs one search at a time (a new search cancels
+  the old one), tracks loading / results / error, and remembers the last
+  search so "Try again" repeats it exactly. Widening the radius reuses the
+  place already found rather than looking it up again.
+- `src/ui/ResultGroups.tsx` and `src/ui/BarCard.tsx` — the four groups, each
+  with an icon, a text heading and a count; every bar shows its closing time
+  (e.g. "2:00 AM" or "Open all night"), distance, address when known and the
+  raw hours under "Hours".
+- `src/ui/VampireLogo.tsx` — the original vampire logo, also used as
+  `public/favicon.svg`.
+- Empty and error states always say what happened in plain words and offer a
+  next step (search wider, type another place, or try again).
 - `src/styles/tokens.css` — colour, spacing, type and motion tokens.
 
 Bar data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL.
