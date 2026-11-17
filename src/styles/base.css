@@ -59,6 +59,13 @@ a {
   color: var(--color-text);
 }
 
+/* Opacity only: content arrives like a light coming on, with nothing moving. */
+@keyframes dusk-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

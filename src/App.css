@@ -1,8 +1,8 @@
 .app {
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   min-height: 100dvh;
-  width: min(100%, 72rem);
+  width: min(100%, var(--content-width));
   margin-inline: auto;
   padding: var(--space-6) var(--space-5);
 }
@@ -10,15 +10,14 @@
 .masthead {
   display: flex;
   align-items: center;
-  gap: var(--space-5);
-  align-self: start;
-  padding-top: clamp(var(--space-6), 10vh, 120px);
+  gap: var(--space-4);
+  padding-top: clamp(var(--space-4), 6vh, var(--space-7));
   animation: dusk-in var(--duration-slow) var(--ease-out-expo) both;
 }
 
 .masthead__mark {
   flex: none;
-  width: clamp(72px, 3rem + 6vw, 136px);
+  width: clamp(64px, 2.5rem + 4vw, 96px);
   height: auto;
 }
 
@@ -31,7 +30,7 @@
 }
 
 .masthead__tagline {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   max-width: 40ch;
   text-wrap: balance;
   color: var(--color-muted);
@@ -39,10 +38,24 @@
   line-height: var(--leading-snug);
 }
 
-.app__footer {
+.app__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
   padding-top: var(--space-6);
+}
+
+.app__footer {
+  padding-top: var(--space-7);
   color: var(--color-muted);
   font-size: var(--text-sm);
+}
+
+/* The footer link sits in running text; pad it to a full tap target without moving the line. */
+.app__footer a {
+  display: inline-block;
+  padding-block: var(--space-3);
 }
 
 @media (max-width: 520px) {
@@ -51,15 +64,10 @@
   }
 
   .masthead {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
-}
 
-/* Opacity only: the wordmark arrives like a light coming on, with nothing moving. */
-@keyframes dusk-in {
-  from {
-    opacity: 0;
+  .masthead__tagline {
+    font-size: var(--text-md);
   }
 }

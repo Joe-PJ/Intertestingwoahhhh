@@ -1,0 +1,440 @@
+/* Day Walker UI components. Every value comes from styles/tokens.css. */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Controls ─────────────────────────────────────────── */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  min-width: var(--tap-target);
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.button--secondary {
+  background: var(--color-surface-raised);
+  border-color: var(--color-muted);
+  color: var(--color-text);
+}
+
+.button__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button--primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-accent) 85%, var(--color-text));
+  }
+
+  .button--secondary:hover:not(:disabled) {
+    border-color: var(--color-text);
+  }
+}
+
+/* Press feedback is a small physical cue; it is skipped entirely for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .button {
+    transition-property: background-color, border-color, transform;
+  }
+
+  .button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+.field-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.field-label--inline {
+  margin-bottom: 0;
+}
+
+.input,
+.select {
+  min-height: var(--tap-target);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.select {
+  padding-inline-end: var(--space-6);
+  cursor: pointer;
+}
+
+/* ── Search panel ─────────────────────────────────────── */
+
+.search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.search__locate {
+  justify-self: start;
+}
+
+.search__note {
+  color: var(--color-accent-text);
+  font-weight: var(--weight-medium);
+}
+
+.search__row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.search__row .input {
+  flex: 1;
+  width: 100%;
+}
+
+.search__radius {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ── Live status line ─────────────────────────────────── */
+
+.status:empty {
+  display: none;
+}
+
+.status__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-muted);
+}
+
+.status__moon {
+  flex: none;
+  color: var(--color-accent-text);
+  animation: moon-wane 1.6s ease-in-out infinite alternate;
+}
+
+.status__summary {
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.status__place {
+  color: var(--color-muted);
+}
+
+/* Opacity only, so the loading moon is calm and reduced-motion safe. */
+@keyframes moon-wane {
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* ── Intro, empty and error notices ───────────────────── */
+
+.intro {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intro__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.intro__label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+}
+
+.intro__note {
+  color: var(--color-muted);
+}
+
+.notice {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.notice--error {
+  border-color: var(--color-accent-text);
+}
+
+.notice__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+}
+
+.notice__body {
+  color: var(--color-muted);
+}
+
+.notice .button {
+  margin-top: var(--space-2);
+}
+
+/* ── Result groups: one timeline, earliest close first ── */
+
+.groups {
+  display: grid;
+  gap: var(--space-7);
+  animation: dusk-in var(--duration-base) var(--ease-out-expo) both;
+}
+
+.group__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+}
+
+.group__icon {
+  flex: none;
+  width: 28px;
+  height: 28px;
+}
+
+.group--day .group__icon {
+  color: var(--color-text);
+}
+
+.group--night .group__icon {
+  color: var(--color-accent-text);
+}
+
+.group--closed .group__icon,
+.group--unknown .group__icon {
+  color: var(--color-muted);
+}
+
+.group__count {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-body);
+}
+
+.group__note {
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+}
+
+.group__empty {
+  margin-top: var(--space-4);
+  color: var(--color-muted);
+}
+
+.group__list {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── One bar: close time in the gutter, details on the line ── */
+
+.bar {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  column-gap: var(--space-4);
+}
+
+.bar__close {
+  padding-top: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A clock time never splits across lines; only "Open all night" may wrap. */
+.bar__close--time {
+  white-space: nowrap;
+}
+
+.bar__close--quiet {
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.bar__body {
+  position: relative;
+  min-width: 0;
+  padding: var(--space-3) 0 var(--space-4) var(--space-4);
+  border-left: 1px solid var(--color-border);
+}
+
+/* The timeline tick, level with the close time. */
+.bar__body::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--space-3) + 0.55em);
+  left: -5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  box-shadow: 0 0 0 3px var(--color-bg);
+}
+
+.group--night .bar__body::before {
+  background: var(--color-accent-text);
+}
+
+.group--day .bar__body::before {
+  background: var(--color-text);
+}
+
+.bar__name {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.bar__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.bar__hours {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.bar__hours summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  padding-inline: var(--space-1);
+  margin-inline-start: calc(-1 * var(--space-1));
+  color: var(--color-accent-text);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  list-style: none;
+}
+
+.bar__hours summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Drawn chevron: points right when closed, down when open. */
+.bar__hours summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-inline-end: var(--space-2);
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+}
+
+.bar__hours[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.bar__hours code {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 400px) {
+  .search {
+    padding: var(--space-4);
+  }
+
+  .search__locate {
+    justify-self: stretch;
+  }
+
+  .bar {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    column-gap: var(--space-3);
+  }
+
+  .bar__close {
+    font-size: var(--text-md);
+  }
+}

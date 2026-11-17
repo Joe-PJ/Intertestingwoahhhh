@@ -1,32 +1,31 @@
 import { useId } from 'react';
 
-interface VampireMarkProps {
+export const LOGO_LABEL = 'Day Walker vampire logo';
+
+interface VampireLogoProps {
   /** Rendered size in px (square). */
   size?: number;
-  /** Accessible name. Omit when the mark sits next to visible text that already names it. */
-  title?: string;
   className?: string;
 }
 
 /**
- * The Day Walker mark: a vampire in a high collar against a blood moon.
- * Drawn from palette tokens so it follows theme changes; the same drawing
- * ships as public/day-walker.svg for the favicon.
+ * The Day Walker logo: an original vampire — widow's peak, fangs, high cape collar —
+ * against a blood moon. Filled from palette tokens so it follows the theme; the same
+ * drawing (same paths, token colours written out as hex) ships as public/favicon.svg,
+ * and VampireLogo.test.tsx fails if the two drift apart.
  */
-export function VampireMark({ size = 64, title, className }: VampireMarkProps) {
+export function VampireLogo({ size = 64, className }: VampireLogoProps) {
   const clipId = useId();
-  const labelled = Boolean(title);
   return (
     <svg
       className={className}
       width={size}
       height={size}
       viewBox="0 0 64 64"
-      role={labelled ? 'img' : undefined}
-      aria-hidden={labelled ? undefined : true}
+      role="img"
+      aria-label={LOGO_LABEL}
       focusable="false"
     >
-      {labelled && <title>{title}</title>}
       <clipPath id={clipId}>
         <circle cx="32" cy="32" r="31" />
       </clipPath>
