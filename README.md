@@ -25,14 +25,22 @@ npm run build      # type-check and build to dist/
 npm run preview    # serve the built app
 ```
 
-## Automatic checks
+## Automatic checks and publishing
 
 `.github/workflows/ci.yml` runs on GitHub's servers for every push to any
 branch, every pull request, and on demand from the **Actions** tab. It installs
 dependencies with `npm ci`, then runs `npm run typecheck`, `npm run lint`,
 `npm test` and `npm run build` — the same commands listed above. If any step
-fails, the commit or pull request is marked as failed. The workflow only checks
-the code; it does not publish or deploy anything.
+fails, the commit or pull request is marked as failed.
+
+When a push to `main` passes those checks, the built app is published to
+**https://joe-pj.github.io/Intertestingwoahhhh/**. Branches and pull requests
+are checked but never published.
+
+Publishing needs a one-time setting that only a repository admin can change:
+**Settings → Pages → Build and deployment → Source: GitHub Actions**. Until it
+is on, the publish job skips itself and leaves a notice on the run saying so;
+the checks still pass or fail as normal.
 
 The build uses relative asset paths (`base: './'` in `vite.config.ts`), so the
 same `dist/` works at a site root or under any sub-path.
