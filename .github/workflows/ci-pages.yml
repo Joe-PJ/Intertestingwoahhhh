@@ -1,7 +1,7 @@
 name: Test and publish
 
-# Every push and pull request runs the checks. Only a push to main that passes
-# them publishes the built app to GitHub Pages.
+# Every push to main and every pull request runs the checks. Only a push to
+# main that passes them publishes the built app to GitHub Pages.
 on:
   push:
     branches: [main]
@@ -13,7 +13,9 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A newer push to a pull request cancels its older run; pushes to main never
+  # cancel each other, so every main commit keeps its own check result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:

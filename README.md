@@ -12,7 +12,8 @@ at a normal hour and which ones keep going deep into the night.
 
 ## Run it
 
-Requires Node 20+.
+Requires Node 20.19 or newer on the 20.x line, or Node 22.12 or newer — what
+Vite 8 needs (`^20.19.0 || >=22.12.0`). CI uses Node 22.
 
 ```sh
 npm install
@@ -27,10 +28,16 @@ npm run preview    # serve the built app
 ## Checks and publishing
 
 `.github/workflows/ci-pages.yml` runs typecheck, lint, tests and build on every
-push and pull request. A push to `main` that passes is published to GitHub
-Pages at `https://joe-pj.github.io/Intertestingwoahhhh/`. Pages must be turned
-on once in the repository's **Settings → Pages** with **Source: GitHub
-Actions**. Until then, the publish job fails and the checks still run. The build
+push to `main` and every pull request.
+
+- **Where it's published:** <https://joe-pj.github.io/Intertestingwoahhhh/>
+- **When it deploys:** on every push to `main`, after those checks pass. Pull
+  requests are checked but never published.
+- **One-time setting:** in the repository's **Settings → Pages**, set
+  **Source: GitHub Actions**. Until then, the publish job fails and the checks
+  still run.
+
+The build
 uses relative asset paths (`base: './'` in `vite.config.ts`), so the same
 `dist/` works at that sub-path or at a site root.
 
